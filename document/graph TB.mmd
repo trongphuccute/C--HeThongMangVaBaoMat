@@ -1,0 +1,35 @@
+graph TB
+    A["🔴 Attacker\n(Kali Linux)"] -->|"HTTP/HTTPS Attack Traffic"| B
+
+    subgraph Internet["🌐 Internet"]
+        B["Public IP\nApplication Gateway"]
+    end
+
+    subgraph Azure["☁️ Microsoft Azure"]
+        subgraph VNet["Virtual Network: 10.0.0.0/16"]
+            subgraph GWSubnet["Gateway Subnet: 10.0.1.0/24"]
+                C["Azure Application Gateway\nWAF v2\nOWASP CRS 3.2"]
+            end
+            subgraph AppSubnet["App Subnet: 10.0.2.0/24"]
+                D["Ubuntu VM\n10.0.2.4"]
+                E["OWASP Juice Shop\n:3000"]
+            end
+        end
+        subgraph Monitoring["📊 Monitoring & Logging"]
+            F["Azure Monitor"]
+            G["Log Analytics Workspace"]
+            H["Diagnostic Settings"]
+        end
+    end
+
+    B --> C
+    C -->|"Legitimate Traffic Only"| D
+    D --> E
+    C -->|"WAF Logs"| H
+    H --> G
+    G --> F
+
+    style A fill:#ff4444,color:#fff
+    style C fill:#0078d4,color:#fff
+    style F fill:#00b4d8,color:#fff
+    style G fill:#00b4d8,color:#fff
